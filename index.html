@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Hadir Rapat - Desa Fajar Asri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #f1f5f9;
+        }
+        @media print {
+            body { background-color: #fff; padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+            .print-container { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+        }
+    </style>
+</head>
+<body class="py-8 px-4 text-slate-800">
+
+    <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-200 print-container">
+        
+        <!-- HEADER KOP SURAT DENGAN LOGO & TULISAN EDITABLE -->
+        <div class="flex items-center justify-between pb-4 mb-6 border-b-4 border-double border-slate-900 gap-4">
+            <!-- Kolom Logo Manual -->
+            <div id="logoDropZone" tabindex="0" class="relative group no-print flex-shrink-0 w-20 h-20 md:w-24 md:h-24 border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center bg-slate-50 overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500" title="Klik untuk pilih file atau tekan Ctrl+V untuk menempel gambar">
+                <img id="logoPreview" src="https://placehold.co/96x96/e2e8f0/64748b?text=LOGO" class="w-full h-full object-contain" alt="Logo Instansi">
+                <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="loadLogo(event)">
+                <div class="absolute inset-0 bg-black/60 text-white text-[9px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition font-medium text-center p-1">
+                    <span>📁 Pilih File</span>
+                    <span class="mt-0.5 text-[8px] text-slate-200">(Atau Ctrl+V / Tempel)</span>
+                </div>
+            </div>
+            <!-- Logo Print Display -->
+            <div class="hidden print:flex flex-shrink-0 w-20 h-20 items-center justify-center">
+                <img id="printLogoImg" src="https://placehold.co/96x96/ffffff/000000?text=LOGO" class="w-full h-full object-contain" alt="Logo">
+            </div>
+
+            <!-- Teks Instansi & Wilayah -->
+            <div class="flex-grow text-center px-2">
+                <h3 id="viewHeaderLine1" class="text-xs md:text-sm font-semibold uppercase tracking-wider text-slate-700 mb-0.5 outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()">PEMERINTAH KABUPATEN MESUJI</h3>
+                <h3 id="viewHeaderLine2" class="text-xs md:text-sm font-semibold uppercase tracking-wider text-slate-700 mb-0.5 outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()">KECAMATAN PANCA</h3>
+                <h2 id="viewHeaderLine3" class="text-sm md:text-base font-bold uppercase tracking-wider text-slate-900 mb-1 outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()">DESA FAJAR ASRI</h2>
+                <h1 class="text-xl md:text-2xl font-black uppercase tracking-wide text-slate-900 mt-1">DAFTAR HADIR PESERTA RAPAT</h1>
+            </div>
+            <!-- Spacer for balance -->
+            <div class="w-20 md:w-24 hidden md:block no-print"></div>
+        </div>
+
+        <div class="no-print bg-slate-50 p-4 md:p-5 rounded-lg border border-dashed border-slate-300 mb-6 shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-md font-bold text-slate-700 flex items-center gap-2">
+                    <span>⚙️</span> Panel Pengaturan & Data Rapat
+                </h3>
+                <div class="flex gap-2">
+                    <button onclick="resetDefaultData()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded transition">Reset Data</button>
+                    <button onclick="saveTemplate()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded transition">Simpan Sesi</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Agenda Rapat</label>
+                    <input type="text" id="inputAgenda" class="w-full text-sm p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" placeholder="Contoh: Rapat Musyawarah Desa" oninput="updateInfo()">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Hari / Tanggal</label>
+                    <input type="text" id="inputTanggal" class="w-full text-sm p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" placeholder="Contoh: Senin, 24 Agustus 2026" oninput="updateInfo()">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Waktu</label>
+                    <input type="text" id="inputWaktu" class="w-full text-sm p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" placeholder="Contoh: 09:00 WIB - Selesai" oninput="updateInfo()">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tempat</label>
+                    <input type="text" id="inputTempat" class="w-full text-sm p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" placeholder="Contoh: Balai Desa Fajar Asri" oninput="updateInfo()">
+                </div>
+            </div>
+        </div>
+
+        <table class="w-full mb-6 text-sm">
+            <tr>
+                <td class="w-36 font-semibold py-1 align-top">Agenda Rapat</td>
+                <td class="w-4 py-1 align-top">:</td>
+                <td id="viewAgenda" class="py-1 align-top font-medium">-</td>
+            </tr>
+            <tr>
+                <td class="w-36 font-semibold py-1 align-top">Hari / Tanggal</td>
+                <td class="w-4 py-1 align-top">:</td>
+                <td id="viewTanggal" class="py-1 align-top">-</td>
+            </tr>
+            <tr>
+                <td class="w-36 font-semibold py-1 align-top">Waktu</td>
+                <td class="w-4 py-1 align-top">:</td>
+                <td id="viewWaktu" class="py-1 align-top">-</td>
+            </tr>
+            <tr>
+                <td class="w-36 font-semibold py-1 align-top">Tempat</td>
+                <td class="w-4 py-1 align-top">:</td>
+                <td id="viewTempat" class="py-1 align-top">-</td>
+            </tr>
+        </table>
+
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse border border-slate-800 text-sm" id="attendanceTable">
+                <thead>
+                    <tr id="headerRow" class="bg-slate-100 text-slate-800 text-center font-bold">
+                        <th class="border border-slate-800 p-2 w-12">No</th>
+                        <th class="border border-slate-800 p-2 dynamic-col">Nama Lengkap</th>
+                        <th class="border border-slate-800 p-2 dynamic-col">Jabatan / Instansi</th>
+                        <th colspan="2" id="sigHeader" class="border border-slate-800 p-2 w-48">Tanda Tangan</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Populated via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="no-print mt-6 flex flex-wrap gap-3 justify-center items-center">
+            <button onclick="openRowModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+                <span>➕</span> Tambah Baris
+            </button>
+            <button onclick="removeLastRow()" class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+                <span>🗑️</span> Hapus Baris Terakhir
+            </button>
+            <button onclick="openColumnModal()" class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+                <span>📊</span> Tambah Kolom
+            </button>
+            <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+                <span>🖨️</span> Cetak / Simpan PDF
+            </button>
+        </div>
+
+        <div class="mt-12 pt-4 border-t border-slate-200 text-xs text-slate-500 flex justify-between items-center">
+            <span>Daftar Hadir Rapat - Desa Fajar Asri, Kec. Panca, Kab. Mesuji</span>
+            <span id="printTimestamp"></span>
+        </div>
+    </div>
+
+    <div id="rowModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 border border-slate-200 transform transition-all">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Tambah Baris Peserta</h3>
+            <p class="text-xs text-slate-500 mb-4">Masukkan jumlah baris yang ingin ditambahkan ke daftar hadir:</p>
+            <input type="number" id="newRowsCountInput" min="1" max="100" value="1" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Jumlah baris...">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeRowModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition">Batal</button>
+                <button onclick="confirmAddRows()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">Tambahkan</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="columnModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200 transform transition-all">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Tambah Kolom Baru</h3>
+            <p class="text-xs text-slate-500 mb-4">Masukkan nama kolom tambahan (contoh: No. HP, Keterangan, Golongan).</p>
+            <input type="text" id="newColumnNameInput" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm mb-4 focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Nama Kolom Baru...">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeColumnModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition">Batal</button>
+                <button onclick="confirmAddColumn()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition">Tambahkan</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="msgModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 border border-slate-200 text-center">
+            <div id="msgIcon" class="text-3xl mb-2">ℹ️</div>
+            <h3 id="msgTitle" class="text-lg font-bold text-slate-900 mb-1">Informasi</h3>
+            <p id="msgText" class="text-xs text-slate-600 mb-6">Pesan pemberitahuan...</p>
+            <button onclick="closeMsgModal()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">OK</button>
+        </div>
+    </div>
+
+    <script>
+        let dynamicColumns = []; 
+        let rowsData = []; 
+        let customLogoData = '';
+
+        window.onload = function() {
+            document.getElementById('printTimestamp').innerText = 'Dicetak pada: ' + new Date().toLocaleDateString('id-ID', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+            
+            loadSavedData();
+            if (rowsData.length === 0) {
+                for (let i = 1; i <= 5; i++) {
+                    rowsData.push({ name: '', title: '', customValues: {} });
+                }
+            }
+            renderTable();
+            updateInfo();
+
+            window.addEventListener('paste', function(e) {
+                const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        const blob = items[i].getAsFile();
+                        if (blob) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                customLogoData = event.target.result;
+                                document.getElementById('logoPreview').src = customLogoData;
+                                document.getElementById('printLogoImg').src = customLogoData;
+                                saveToLocalStorage();
+                                showMessage("Logo Berhasil Ditempel", "Gambar logo berhasil dimuat dari clipboard.", "✅");
+                            }
+                            reader.readAsDataURL(blob);
+                            e.preventDefault();
+                        }
+                    }
+                }
+            });
+        };
+
+        function loadLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customLogoData = e.target.result;
+                    document.getElementById('logoPreview').src = customLogoData;
+                    document.getElementById('printLogoImg').src = customLogoData;
+                    saveToLocalStorage();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showMessage(title, text, icon = 'ℹ️') {
+            document.getElementById('msgTitle').innerText = title;
+            document.getElementById('msgText').innerText = text;
+            document.getElementById('msgIcon').innerText = icon;
+            document.getElementById('msgModal').classList.remove('hidden');
+            document.getElementById('msgModal').classList.add('flex');
+        }
+
+        function closeMsgModal() {
+            document.getElementById('msgModal').classList.remove('flex');
+            document.getElementById('msgModal').classList.add('hidden');
+        }
+
+        function updateInfo() {
+            document.getElementById('viewAgenda').innerText = document.getElementById('inputAgenda').value || '-';
+            document.getElementById('viewTanggal').innerText = document.getElementById('inputTanggal').value || '-';
+            document.getElementById('viewWaktu').innerText = document.getElementById('inputWaktu').value || '-';
+            document.getElementById('viewTempat').innerText = document.getElementById('inputTempat').value || '-';
+            saveToLocalStorage();
+        }
+
+        function renderTable() {
+            const headerRow = document.getElementById('headerRow');
+            const tbody = document.getElementById('tableBody');
+            
+            let headerHTML = `
+                <th class="border border-slate-800 p-2 w-12">No</th>
+                <th class="border border-slate-800 p-2 dynamic-col">Nama Lengkap</th>
+                <th class="border border-slate-800 p-2 dynamic-col">Jabatan / Instansi</th>
+            `;
+
+            dynamicColumns.forEach((colName, index) => {
+                headerHTML += `
+                    <th class="border border-slate-800 p-2 dynamic-col relative group">
+                        ${colName}
+                        <button onclick="removeColumn(${index})" class="no-print absolute top-1 right-1 text-red-500 hover:text-red-700 text-xs px-1 rounded bg-white/80 shadow-sm" title="Hapus Kolom">×</button>
+                    </th>
+                `;
+            });
+
+            headerHTML += `
+                <th colspan="2" id="sigHeader" class="border border-slate-800 p-2 w-48">Tanda Tangan</th>
+            `;
+            headerRow.innerHTML = headerHTML;
+
+            let bodyHTML = '';
+            rowsData.forEach((row, rowIndex) => {
+                const rowNum = rowIndex + 1;
+                bodyHTML += `<tr class="hover:bg-slate-50/50">`;
+                
+                bodyHTML += `<td class="border border-slate-800 p-2 text-center font-medium">${rowNum}</td>`;
+                
+                bodyHTML += `
+                    <td class="border border-slate-800 p-1.5">
+                        <input type="text" class="w-full p-1 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-400 rounded text-sm" 
+                            value="${row.name || ''}" oninput="updateRowData(${rowIndex}, 'name', this.value)">
+                    </td>
+                `;
+
+                bodyHTML += `
+                    <td class="border border-slate-800 p-1.5">
+                        <input type="text" class="w-full p-1 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-400 rounded text-sm" 
+                            value="${row.title || ''}" oninput="updateRowData(${rowIndex}, 'title', this.value)">
+                    </td>
+                `;
+
+                dynamicColumns.forEach((colName, colIdx) => {
+                    const val = row.customValues && row.customValues[colIdx] ? row.customValues[colIdx] : '';
+                    bodyHTML += `
+                        <td class="border border-slate-800 p-1.5">
+                            <input type="text" class="w-full p-1 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-400 rounded text-sm" 
+                                value="${val}" oninput="updateCustomValue(${rowIndex}, ${colIdx}, this.value)">
+                        </td>
+                    `;
+                });
+
+                const isOdd = rowNum % 2 !== 0;
+                bodyHTML += `
+                    <td class="border border-slate-800 p-2 h-12 text-xs text-slate-500 align-middle ${isOdd ? 'text-left pl-3 font-semibold' : ''}">${isOdd ? rowNum + '.' : ''}</td>
+                    <td class="border border-slate-800 p-2 h-12 text-xs text-slate-500 align-middle ${!isOdd ? 'text-left pl-3 font-semibold' : ''}">${!isOdd ? rowNum + '.' : ''}</td>
+                `;
+
+                bodyHTML += `</tr>`;
+            });
+
+            tbody.innerHTML = bodyHTML;
+        }
+
+        function updateRowData(index, field, value) {
+            rowsData[index][field] = value;
+            saveToLocalStorage();
+        }
+
+        function updateCustomValue(rowIndex, colIndex, value) {
+            if (!rowsData[rowIndex].customValues) {
+                rowsData[rowIndex].customValues = {};
+            }
+            rowsData[rowIndex].customValues[colIndex] = value;
+            saveToLocalStorage();
+        }
+
+        function openRowModal() {
+            document.getElementById('newRowsCountInput').value = '1';
+            document.getElementById('rowModal').classList.remove('hidden');
+            document.getElementById('rowModal').classList.add('flex');
+            document.getElementById('newRowsCountInput').focus();
+            document.getElementById('newRowsCountInput').select();
+        }
+
+        function closeRowModal() {
+            document.getElementById('rowModal').classList.remove('flex');
+            document.getElementById('rowModal').classList.add('hidden');
+        }
+
+        function confirmAddRows() {
+            const countInput = parseInt(document.getElementById('newRowsCountInput').value);
+            if (isNaN(countInput) || countInput <= 0) {
+                showMessage("Jumlah Tidak Valid", "Silakan masukkan angka jumlah baris yang valid (minimal 1).", "⚠️");
+                return;
+            }
+            for (let i = 0; i < countInput; i++) {
+                rowsData.push({
+                    name: '',
+                    title: '',
+                    customValues: {}
+                });
+            }
+            closeRowModal();
+            renderTable();
+            saveToLocalStorage();
+        }
+
+        function removeLastRow() {
+            if (rowsData.length <= 1) {
+                showMessage("Peringatan", "Daftar hadir harus menyisakan minimal 1 baris.", "⚠️");
+                return;
+            }
+            rowsData.pop();
+            renderTable();
+            saveToLocalStorage();
+        }
+
+        function openColumnModal() {
+            document.getElementById('newColumnNameInput').value = '';
+            document.getElementById('columnModal').classList.remove('hidden');
+            document.getElementById('columnModal').classList.add('flex');
+            document.getElementById('newColumnNameInput').focus();
+        }
+
+        function closeColumnModal() {
+            document.getElementById('columnModal').classList.remove('flex');
+            document.getElementById('columnModal').classList.add('hidden');
+        }
+
+        function confirmAddColumn() {
+            const colName = document.getElementById('newColumnNameInput').value.trim();
+            if (!colName) {
+                showMessage("Nama Kolom Kosong", "Silakan masukkan nama kolom yang valid.", "⚠️");
+                return;
+            }
+            dynamicColumns.push(colName);
+            closeColumnModal();
+            renderTable();
+            saveToLocalStorage();
+        }
+
+        function removeColumn(index) {
+            dynamicColumns.splice(index, 1);
+            rowsData.forEach(row => {
+                if (row.customValues) {
+                    delete row.customValues[index];
+                }
+            });
+            renderTable();
+            saveToLocalStorage();
+        }
+
+        function resetDefaultData() {
+            document.getElementById('inputAgenda').value = '';
+            document.getElementById('inputTanggal').value = '';
+            document.getElementById('inputWaktu').value = '';
+            document.getElementById('inputTempat').value = '';
+            document.getElementById('viewHeaderLine1').innerText = 'PEMERINTAH KABUPATEN MESUJI';
+            document.getElementById('viewHeaderLine2').innerText = 'KECAMATAN PANCA';
+            document.getElementById('viewHeaderLine3').innerText = 'DESA FAJAR ASRI';
+            customLogoData = '';
+            document.getElementById('logoPreview').src = 'https://placehold.co/96x96/e2e8f0/64748b?text=LOGO';
+            document.getElementById('printLogoImg').src = 'https://placehold.co/96x96/ffffff/000000?text=LOGO';
+            dynamicColumns = [];
+            rowsData = [];
+            for (let i = 1; i <= 5; i++) {
+                rowsData.push({ name: '', title: '', customValues: {} });
+            }
+            localStorage.removeItem('fajarAsriRapat_data');
+            renderTable();
+            updateInfo();
+            showMessage("Berhasil", "Data berhasil direset ke pengaturan awal.", "✅");
+        }
+
+        function saveTemplate() {
+            saveToLocalStorage();
+            showMessage("Berhasil Disimpan", "Data rapat dan daftar hadir telah disimpan ke penyimpanan lokal browser Anda.", "💾");
+        }
+
+        function saveToLocalStorage() {
+            const data = {
+                line1: document.getElementById('viewHeaderLine1').innerText,
+                line2: document.getElementById('viewHeaderLine2').innerText,
+                line3: document.getElementById('viewHeaderLine3').innerText,
+                agenda: document.getElementById('inputAgenda').value,
+                tanggal: document.getElementById('inputTanggal').value,
+                waktu: document.getElementById('inputWaktu').value,
+                tempat: document.getElementById('inputTempat').value,
+                dynamicColumns: dynamicColumns,
+                rowsData: rowsData,
+                logo: customLogoData
+            };
+            localStorage.setItem('fajarAsriRapat_data', JSON.stringify(data));
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('fajarAsriRapat_data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.line1) document.getElementById('viewHeaderLine1').innerText = data.line1;
+                    if (data.line2) document.getElementById('viewHeaderLine2').innerText = data.line2;
+                    if (data.line3) document.getElementById('viewHeaderLine3').innerText = data.line3;
+                    if (data.agenda) document.getElementById('inputAgenda').value = data.agenda;
+                    if (data.tanggal) document.getElementById('inputTanggal').value = data.tanggal;
+                    if (data.waktu) document.getElementById('inputWaktu').value = data.waktu;
+                    if (data.tempat) document.getElementById('inputTempat').value = data.tempat;
+                    if (data.dynamicColumns) dynamicColumns = data.dynamicColumns;
+                    if (data.rowsData) rowsData = data.rowsData;
+                    if (data.logo) {
+                        customLogoData = data.logo;
+                        document.getElementById('logoPreview').src = customLogoData;
+                        document.getElementById('printLogoImg').src = customLogoData;
+                    }
+                } catch(e) {
+                    console.error("Gagal memuat data tersimpan", e);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
