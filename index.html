@@ -123,6 +123,22 @@
             </table>
         </div>
 
+        <!-- TANDA TANGAN PENGESAHAN DI BAWAH -->
+        <div class="mt-8 pt-4 grid grid-cols-2 gap-8 text-sm break-inside-avoid">
+            <div class="text-center">
+                <p id="sigTitleLeft" class="font-medium outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()">Mengetahui,</p>
+                <p id="sigRoleLeft" class="font-bold mb-16 outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()">Kepala Desa Fajar Asri</p>
+                <p class="font-semibold underline outline-none focus:bg-yellow-50 rounded px-1 inline-block" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()" id="sigNameLeft">( ........................................ )</p>
+                <p class="text-xs text-slate-500 mt-0.5 outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()" id="sigNipLeft">NIP. ........................................</p>
+            </div>
+            <div class="text-center">
+                <p id="sigTitleRight" class="font-medium outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()">Fajar Asri, ........................ 2026</p>
+                <p id="sigRoleRight" class="font-bold mb-16 outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()">Sekretaris / Notulis</p>
+                <p class="font-semibold underline outline-none focus:bg-yellow-50 rounded px-1 inline-block" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()" id="sigNameRight">( ........................................ )</p>
+                <p class="text-xs text-slate-500 mt-0.5 outline-none focus:bg-yellow-50 rounded px-1" contenteditable="true" spellcheck="false" oninput="saveToLocalStorage()" id="sigNipRight">NIP. ........................................</p>
+            </div>
+        </div>
+
         <div class="no-print mt-6 flex flex-wrap gap-3 justify-center items-center">
             <button onclick="openRowModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
                 <span>➕</span> Tambah Baris
@@ -415,6 +431,14 @@
             document.getElementById('viewHeaderLine1').innerText = 'PEMERINTAH KABUPATEN MESUJI';
             document.getElementById('viewHeaderLine2').innerText = 'KECAMATAN PANCA';
             document.getElementById('viewHeaderLine3').innerText = 'DESA FAJAR ASRI';
+            document.getElementById('sigTitleLeft').innerText = 'Mengetahui,';
+            document.getElementById('sigRoleLeft').innerText = 'Kepala Desa Fajar Asri';
+            document.getElementById('sigNameLeft').innerText = '( ........................................ )';
+            document.getElementById('sigNipLeft').innerText = 'NIP. ........................................';
+            document.getElementById('sigTitleRight').innerText = 'Fajar Asri, ........................ 2026';
+            document.getElementById('sigRoleRight').innerText = 'Sekretaris / Notulis';
+            document.getElementById('sigNameRight').innerText = '( ........................................ )';
+            document.getElementById('sigNipRight').innerText = 'NIP. ........................................';
             customLogoData = '';
             document.getElementById('logoPreview').src = 'https://placehold.co/96x96/e2e8f0/64748b?text=LOGO';
             document.getElementById('printLogoImg').src = 'https://placehold.co/96x96/ffffff/000000?text=LOGO';
@@ -443,6 +467,14 @@
                 tanggal: document.getElementById('inputTanggal').value,
                 waktu: document.getElementById('inputWaktu').value,
                 tempat: document.getElementById('inputTempat').value,
+                sigTitleLeft: document.getElementById('sigTitleLeft').innerText,
+                sigRoleLeft: document.getElementById('sigRoleLeft').innerText,
+                sigNameLeft: document.getElementById('sigNameLeft').innerText,
+                sigNipLeft: document.getElementById('sigNipLeft').innerText,
+                sigTitleRight: document.getElementById('sigTitleRight').innerText,
+                sigRoleRight: document.getElementById('sigRoleRight').innerText,
+                sigNameRight: document.getElementById('sigNameRight').innerText,
+                sigNipRight: document.getElementById('sigNipRight').innerText,
                 dynamicColumns: dynamicColumns,
                 rowsData: rowsData,
                 logo: customLogoData
@@ -462,6 +494,14 @@
                     if (data.tanggal) document.getElementById('inputTanggal').value = data.tanggal;
                     if (data.waktu) document.getElementById('inputWaktu').value = data.waktu;
                     if (data.tempat) document.getElementById('inputTempat').value = data.tempat;
+                    if (data.sigTitleLeft) document.getElementById('sigTitleLeft').innerText = data.sigTitleLeft;
+                    if (data.sigRoleLeft) document.getElementById('sigRoleLeft').innerText = data.sigRoleLeft;
+                    if (data.sigNameLeft) document.getElementById('sigNameLeft').innerText = data.sigNameLeft;
+                    if (data.sigNipLeft) document.getElementById('sigNipLeft').innerText = data.sigNipLeft;
+                    if (data.sigTitleRight) document.getElementById('sigTitleRight').innerText = data.sigTitleRight;
+                    if (data.sigRoleRight) document.getElementById('sigRoleRight').innerText = data.sigRoleRight;
+                    if (data.sigNameRight) document.getElementById('sigNameRight').innerText = data.sigNameRight;
+                    if (data.sigNipRight) document.getElementById('sigNipRight').innerText = data.sigNipRight;
                     if (data.dynamicColumns) dynamicColumns = data.dynamicColumns;
                     if (data.rowsData) rowsData = data.rowsData;
                     if (data.logo) {
